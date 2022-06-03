@@ -13,6 +13,12 @@ const googleClient = new OAuth2Client({
 
 const authenticateUserGoogle = asyncHandler(async (req, res) => {
   const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      error: "Token is required",
+    });
+  }
   const ticket = await googleClient.verifyIdToken({
     idToken: token,
     audience: process.env.GOOGLE_CLIENT_ID,
