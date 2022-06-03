@@ -1,0 +1,132 @@
+const asyncHandler = require("express-async-handler");
+
+const Channel = require("../models/channelModel");
+
+// @desc    Get all channels
+// @route   GET /api/v1/channels
+// @access  Public
+
+const getChannels = asyncHandler(async (req, res) => {
+  const channels = await Channel.find();
+
+  res.status(200).json({
+    success: true,
+    count: channels.length,
+    data: channels,
+  });
+});
+
+// @desc    Get single channel by userId
+// @route   GET /api/v1/channels/:id
+// @access  Public
+
+const getChannelByUserId = asyncHandler(async (req, res) => {
+  if (!req.params.id) {
+    return res.status(500).json({
+      success: false,
+      error: `Invalid ID`,
+    });
+  }
+
+  try {
+    const channel = await Channel.findOne({ userId: req.params.id });
+
+    if (!channel) {
+      return res.status(400).json({
+        success: false,
+        error: `Channel not found`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: channel,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
+// @desc  Add channel
+// @route POST /api/v1/channels
+// @access Private
+
+const addChannel = asyncHandler(async (req, res) => {
+  // validate request body with schema
+  /* const { error } = await Channel.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.errors,
+    });
+  } */
+
+  try {
+    const channel = await Channel.create(req.body);
+
+    return res.status(201).json({
+      success: true,
+      data: channel,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// @desc  Update channel
+// @route PUT /api/v1/channels/:id
+// @access Private
+
+const updateChannel = asyncHandler(async (req, res) => {
+  const channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!channel) {
+    return res.status(400).json({
+      success: false,
+      error: `Channel not found`,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: channel,
+  });
+});
+
+// @desc  Delete channel
+// @route DELETE /api/v1/channels/:id
+// @access Private
+
+const deleteChannel = asyncHandler(async (req, res) => {
+  const channel = await Channel.findByIdAndDelete(req.params.id);
+
+  if (!channel) {
+    return res.status(400).json({
+      success: false,
+      error: `Channel not found`,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
+
+module.exports = {
+  getChannels,
+  getChannelByUserId,
+  addChannel,
+  updateChannel,
+  deleteChannel,
+};
