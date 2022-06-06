@@ -1,7 +1,12 @@
 const mongoose = require("mongoose");
 
-const channelSchema = new mongoose.Schema(
+const showSchema = new mongoose.Schema(
   {
+    channelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel",
+      required: true,
+    },
     name: {
       type: String,
       required: true,
@@ -11,16 +16,7 @@ const channelSchema = new mongoose.Schema(
       required: true,
       maxlength: 256,
     },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
     imageUrl: {
-      type: String,
-      required: true,
-    },
-    backgroundUrl: {
       type: String,
       required: true,
     },
@@ -30,4 +26,4 @@ const channelSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Channel", channelSchema);
+module.exports = mongoose.model("Show", showSchema);

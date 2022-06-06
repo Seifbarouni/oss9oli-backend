@@ -4,6 +4,7 @@ require("dotenv").config();
 const connectDB = require("./config/db");
 const podcastRouter = require("./routes/podcastsRoutes");
 const channelRouter = require("./routes/channelsRoutes");
+const showRouter = require("./routes/showsRoutes");
 const PORT = process.env.PORT || 5002;
 
 connectDB();
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/api/v1/podcasts", podcastRouter);
 app.use("/api/v1/channels", channelRouter);
+app.use("/api/v1/shows", showRouter);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

@@ -7,6 +7,20 @@ const podcastSchema = new mongoose.Schema(
       ref: "Channel",
       required: true,
     },
+    showId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Show",
+      required: true,
+    },
+    epidosdeNumber: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: "pending",
+    },
     title: {
       type: String,
       required: true,
