@@ -55,22 +55,38 @@ const getChannelByUserId = asyncHandler(async (req, res) => {
 // @access Private
 
 const addChannel = asyncHandler(async (req, res) => {
-  // validate request body with schema
-  /* const { error } = await Channel.validate(req.body);
-
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      error: error.errors,
-    });
-  } */
-
   try {
-    const channel = await Channel.create(req.body);
+    const image = req.files["image"][0];
+    const background = req.files["background"][0];
+    const name = req.body.name;
+    const userId = req.body.userId;
+    const description = req.body.description;
+
+    const channel = new Channel({
+      name,
+      description,
+      userId,
+      image: {
+        encoding: image.encoding,
+        file: {
+          data: image.buffer,
+          contentType: image.mimetype,
+        },
+      },
+      background: {
+        encoding: background.encoding,
+        file: {
+          data: background.buffer,
+          contentType: background.mimetype,
+        },
+      },
+    });
+
+    const createdChannel = await Channel.create(channel);
 
     return res.status(201).json({
       success: true,
-      data: channel,
+      data: createdChannel,
     });
   } catch (error) {
     return res.status(500).json({

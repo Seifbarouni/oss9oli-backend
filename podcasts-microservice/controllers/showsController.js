@@ -33,7 +33,7 @@ const getShowsByChannelId = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/shows/:id
 // @access  Public
 
-const getShowsById = asyncHandler(async (req, res) => {
+const getShowById = asyncHandler(async (req, res) => {
   if (!req.params.id) {
     return res.status(500).json({
       success: false,
@@ -68,7 +68,23 @@ const getShowsById = asyncHandler(async (req, res) => {
 
 const addShow = asyncHandler(async (req, res) => {
   try {
-    const show = await Show.create(req.body);
+    channelId = req.body.channelId;
+    showName = req.body.name;
+    description = req.body.description;
+    image = req.files["image"][0];
+    const show = new Show({
+      channelId,
+      name: showName,
+      description,
+      image: {
+        encoding: image.encoding,
+        file: {
+          data: image.buffer,
+          contentType: image.mimetype,
+        },
+      },
+    });
+    await show.save();
     return res.status(201).json({
       success: true,
       data: show,
@@ -118,7 +134,7 @@ const updateShow = asyncHandler(async (req, res) => {
 
 module.exports = {
   getShowsByChannelId,
-  getShowsById,
+  getShowById,
   addShow,
   updateShow,
 };

@@ -1,5 +1,10 @@
 const express = require("express");
 const channelRouter = express.Router();
+const multer = require("multer");
+
+//setting options for multer
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const {
   getChannels,
@@ -9,11 +14,16 @@ const {
   deleteChannel,
 } = require("../controllers/channelsController");
 
-channelRouter.route("/").get(getChannels).post(addChannel);
-channelRouter
-  .route("/:id")
-  .get(getChannelByUserId)
-  .put(updateChannel)
-  .delete(deleteChannel);
+channelRouter.get("/", getChannels);
+channelRouter.post(
+  "/",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "background", maxCount: 1 },
+  ]),
+  addChannel
+);
+channelRouter.route("/:id").get(getChannelByUserId).delete(deleteChannel);
+channelRouter.put("/:id", updateChannel);
 
 module.exports = channelRouter;
