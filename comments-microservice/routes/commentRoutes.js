@@ -6,6 +6,7 @@ const {
   addComment,
   updateComment,
   deleteComment,
+  replyToComment,
 } = require("../controllers/commentController");
 
 router.route("/").post(addComment);
@@ -14,5 +15,6 @@ router
   .get(getCommentsByPodcastId)
   .put(updateComment)
   .delete(deleteComment);
+router.route("/reply").post(replyToComment);
 
 module.exports = router;

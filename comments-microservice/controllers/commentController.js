@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const Comment = require("../models/commentModel");
+const Reply = require("../models/replyModel");
 
 // @desc    Get comments for a podcast
 // @route   GET /api/v1/comments/:id
@@ -147,9 +148,43 @@ const deleteComment = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc  reply to comment
+// @route POST /api/v1/comments/reply
+// @access Public
+
+const replyToComment = asyncHandler(async (req, res) => {
+  const { userId, commentId, reply } = req.body;
+
+  if (!userId || !commentId || !reply) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
+  try {
+    const newReply = await Reply.create({
+      userId,
+      commentId,
+      reply,
+    });
+
+    return res.status(201).json({
+      success: true,
+      data: newReply,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: err,
+    });
+  }
+});
+
 module.exports = {
   getCommentsByPodcastId,
   addComment,
   updateComment,
   deleteComment,
+  replyToComment,
 };
