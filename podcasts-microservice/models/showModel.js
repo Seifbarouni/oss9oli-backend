@@ -16,12 +16,9 @@ const showSchema = new mongoose.Schema(
       required: true,
       maxlength: 256,
     },
-    image: {
-      encoding: String,
-      file: {
-        data: Buffer,
-        contentType: String,
-      },
+    imageUrl: {
+      type: String,
+      required: true,
     },
   },
   {

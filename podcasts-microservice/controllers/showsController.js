@@ -71,18 +71,12 @@ const addShow = asyncHandler(async (req, res) => {
     channelId = req.body.channelId;
     showName = req.body.name;
     description = req.body.description;
-    image = req.files["image"][0];
+    image = req.body.image;
     const show = new Show({
       channelId,
       name: showName,
       description,
-      image: {
-        encoding: image.encoding,
-        file: {
-          data: image.buffer,
-          contentType: image.mimetype,
-        },
-      },
+      imageUrl: image,
     });
     await show.save();
     return res.status(201).json({

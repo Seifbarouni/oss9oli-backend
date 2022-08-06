@@ -16,19 +16,13 @@ const channelSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    image: {
-      encoding: String,
-      file: {
-        data: Buffer,
-        contentType: String,
-      },
+    imageUrl: {
+      type: String,
+      required: true,
     },
-    background: {
-      encoding: String,
-      file: {
-        data: Buffer,
-        contentType: String,
-      },
+    backgroundUrl: {
+      type: String,
+      required: true,
     },
   },
   {

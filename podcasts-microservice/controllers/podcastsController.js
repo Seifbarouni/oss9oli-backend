@@ -55,10 +55,10 @@ const getPodcast = asyncHandler(async (req, res) => {
 });
 
 // @desc   Get podcasts by channel
-// @route  GET /api/v1/podcasts/channel/:id
+// @route  GET /api/v1/podcasts/show/:id
 // @access Public
 
-const getPodcastsByChannelId = asyncHandler(async (req, res) => {
+const getPodcastsByShowId = asyncHandler(async (req, res) => {
   if (!req.params.id) {
     return res.status(500).json({
       success: false,
@@ -67,7 +67,7 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
   }
 
   try {
-    const pods = await Podcast.find({ channelId: req.params.id });
+    const pods = await Podcast.find({ showId: req.params.id });
 
     if (!pods) {
       return res.status(400).json({
@@ -155,7 +155,7 @@ const deletePodcast = asyncHandler(async (req, res) => {
 module.exports = {
   getPodcasts,
   getPodcast,
-  getPodcastsByChannelId,
+  getPodcastsByShowId,
   addPodcast,
   updatePodcast,
   deletePodcast,

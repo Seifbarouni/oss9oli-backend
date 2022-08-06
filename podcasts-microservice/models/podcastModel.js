@@ -2,18 +2,9 @@ const mongoose = require("mongoose");
 
 const podcastSchema = new mongoose.Schema(
   {
-    channelId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Channel",
-      required: true,
-    },
     showId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Show",
-      required: true,
-    },
-    epidosdeNumber: {
-      type: Number,
       required: true,
     },
     status: {
@@ -47,10 +38,6 @@ const podcastSchema = new mongoose.Schema(
     audioUrl: {
       type: String,
       required: true,
-    },
-    audioId: {
-      type: String,
-      required: false,
     },
   },
   {
