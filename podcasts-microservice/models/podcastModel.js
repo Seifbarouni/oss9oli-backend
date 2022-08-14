@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const podcastSchema = new mongoose.Schema(
   {
-    showId: {
+    channelId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Show",
+      ref: "Channel",
       required: true,
     },
     status: {

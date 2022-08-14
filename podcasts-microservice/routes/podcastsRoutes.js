@@ -4,7 +4,7 @@ const podcastRouter = express.Router();
 const {
   getPodcasts,
   getPodcast,
-  getPodcastsByShowId,
+  getPodcastsByChannelId,
   addPodcast,
   updatePodcast,
   deletePodcast,
@@ -16,6 +16,6 @@ podcastRouter
   .get(getPodcast)
   .put(updatePodcast)
   .delete(deletePodcast);
-podcastRouter.route("/channel/:id").get(getPodcastsByShowId);
+podcastRouter.route("/channel/:id").get(getPodcastsByChannelId);
 
 module.exports = podcastRouter;
