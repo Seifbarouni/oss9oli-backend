@@ -17,10 +17,7 @@ const {
 channelRouter.get("/", getChannels);
 channelRouter.post(
   "/",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "background", maxCount: 1 },
-  ]),
+  upload.fields([{ name: "image", maxCount: 1 }]),
   addChannel
 );
 channelRouter.route("/:id").get(getChannelByUserId).delete(deleteChannel);

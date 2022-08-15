@@ -57,7 +57,6 @@ const getChannelByUserId = asyncHandler(async (req, res) => {
 const addChannel = asyncHandler(async (req, res) => {
   try {
     const image = req.body.image;
-    const background = req.body.background;
     const name = req.body.name;
     const userId = req.body.userId;
     const description = req.body.description;
@@ -67,7 +66,6 @@ const addChannel = asyncHandler(async (req, res) => {
       description,
       userId,
       imageUrl: image,
-      backgroundUrl: background,
     });
 
     const createdChannel = await Channel.create(channel);

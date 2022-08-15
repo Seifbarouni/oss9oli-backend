@@ -20,10 +20,6 @@ const channelSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    backgroundUrl: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,
