@@ -12,6 +12,11 @@ const podcastSchema = new mongoose.Schema(
       required: true,
       default: "pending",
     },
+    explicit: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
     title: {
       type: String,
       required: true,
