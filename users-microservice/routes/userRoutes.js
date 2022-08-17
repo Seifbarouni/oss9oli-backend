@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
+const { verifyToken, verifyProperty } = require("../middlewares/auth");
 
 const {
-  authenticateUserGoogle,
-  authenticateUserFacebook,
   updateUser,
 } = require("../controllers/userController");
 
-router.route("/auth/google").post(authenticateUserGoogle);
-router.route("/auth/facebook").post(authenticateUserFacebook);
-router.route("/:id").post(updateUser);
+
+router.post("/:id",[verifyToken, verifyProperty],updateUser);
 
 module.exports = router;
