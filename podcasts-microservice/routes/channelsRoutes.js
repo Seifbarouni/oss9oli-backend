@@ -15,12 +15,8 @@ const {
 } = require("../controllers/channelsController");
 
 channelRouter.get("/", getChannels);
-channelRouter.post(
-  "/",
-  upload.fields([{ name: "image", maxCount: 1 }]),
-  addChannel
-);
+channelRouter.post("/", upload.single("file"), addChannel);
 channelRouter.route("/:id").get(getChannelByUserId).delete(deleteChannel);
-channelRouter.put("/:id", updateChannel);
+channelRouter.put("/:id", upload.single("file"), updateChannel);
 
 module.exports = channelRouter;

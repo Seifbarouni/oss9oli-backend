@@ -95,7 +95,13 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
 
 const addPodcast = asyncHandler(async (req, res) => {
   try {
-    const pod = await Podcast.create(req.body);
+    const audio = req.file;
+    const podcast = new Podcast({
+      ...req.body,
+      audio,
+    });
+
+    const pod = await Podcast.create(podcast);
 
     return res.status(201).json({
       success: true,
@@ -114,10 +120,23 @@ const addPodcast = asyncHandler(async (req, res) => {
 // @access Public
 
 const updatePodcast = asyncHandler(async (req, res) => {
-  const pod = await Podcast.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  let pod;
+
+  if (req.file) {
+    const audio = {
+      data: req.file.buffer,
+      contentType: req.file.mimetype,
+    };
+    pod = await Podcast.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, audio },
+      { new: true }
+    );
+  } else {
+    pod = await Podcast.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+  }
 
   if (!pod) {
     return res.status(400).json({
