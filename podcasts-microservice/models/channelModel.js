@@ -16,8 +16,9 @@ const channelSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    // make image base64 string
     image: {
-      data: Buffer,
+      data: String,
       contentType: String,
     },
   },

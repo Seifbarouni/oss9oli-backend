@@ -33,7 +33,7 @@ const podcastSchema = new mongoose.Schema(
     },
     length: {
       type: Number,
-      required: true,
+      required: false,
     },
     numberOfListeners: {
       type: Number,
@@ -41,8 +41,8 @@ const podcastSchema = new mongoose.Schema(
       default: 0,
     },
     audio: {
-      data: Buffer,
-      contentType: String,
+      type: String,
+      required: true,
     },
   },
   {

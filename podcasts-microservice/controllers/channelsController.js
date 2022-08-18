@@ -60,12 +60,13 @@ const addChannel = asyncHandler(async (req, res) => {
     const name = req.body.name;
     const userId = req.body.userId;
     const description = req.body.description;
+
     const channel = new Channel({
       name,
       description,
       userId,
       image: {
-        data: image.buffer,
+        data: image.buffer.toString("base64"),
         contentType: image.mimetype,
       },
     });
@@ -97,7 +98,7 @@ const updateChannel = asyncHandler(async (req, res) => {
   if (req.file) {
     // find by id and update with image
     const image = {
-      data: req.file.buffer,
+      data: req.file.buffer.toString("base64"),
       contentType: req.file.mimetype,
     };
     channel = await Channel.findByIdAndUpdate(

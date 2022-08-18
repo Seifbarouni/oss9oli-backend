@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const Podcast = require("../models/podcastModel");
+const fs = require("fs");
 
 // @desc    Get all podcasts
 // @route   GET /api/v1/podcasts
@@ -31,6 +32,9 @@ const getPodcast = asyncHandler(async (req, res) => {
   try {
     const pod = await Podcast.findById(req.params.id);
 
+    // get audio file
+    const file = fs.readFileSync(pod.audio);
+
     if (!pod) {
       return res.status(400).json({
         success: false,
@@ -44,7 +48,10 @@ const getPodcast = asyncHandler(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data: pod,
+      data: {
+        ...pod,
+        data: file.toString("base64"),
+      },
     });
   } catch (err) {
     return res.status(500).json({
@@ -95,12 +102,10 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
 
 const addPodcast = asyncHandler(async (req, res) => {
   try {
-    const audio = req.file;
     const podcast = new Podcast({
       ...req.body,
-      audio,
+      audio: req.file.path,
     });
-
     const pod = await Podcast.create(podcast);
 
     return res.status(201).json({
@@ -108,6 +113,7 @@ const addPodcast = asyncHandler(async (req, res) => {
       data: pod,
     });
   } catch (err) {
+    console.log(err);
     return res.status(400).json({
       success: false,
       errors: err.errors,
@@ -123,13 +129,9 @@ const updatePodcast = asyncHandler(async (req, res) => {
   let pod;
 
   if (req.file) {
-    const audio = {
-      data: req.file.buffer,
-      contentType: req.file.mimetype,
-    };
     pod = await Podcast.findByIdAndUpdate(
       req.params.id,
-      { ...req.body, audio },
+      { ...req.body, audio: req.file.path },
       { new: true }
     );
   } else {
