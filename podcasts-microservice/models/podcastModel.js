@@ -15,7 +15,7 @@ const podcastSchema = new mongoose.Schema(
     explicit: {
       type: Boolean,
       required: true,
-      default: false
+      default: false,
     },
     title: {
       type: String,
@@ -33,14 +33,14 @@ const podcastSchema = new mongoose.Schema(
     },
     length: {
       type: Number,
-      required: true,
+      required: false,
     },
     numberOfListeners: {
       type: Number,
       required: true,
       default: 0,
     },
-    audioUrl: {
+    audio: {
       type: String,
       required: true,
     },
