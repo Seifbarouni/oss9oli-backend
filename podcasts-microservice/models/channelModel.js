@@ -16,9 +16,10 @@ const channelSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    imageUrl: {
-      type: String,
-      required: true,
+    // make image base64 string
+    image: {
+      data: String,
+      contentType: String,
     },
   },
   {

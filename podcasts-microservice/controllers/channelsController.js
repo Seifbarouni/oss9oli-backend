@@ -56,7 +56,7 @@ const getChannelByUserId = asyncHandler(async (req, res) => {
 
 const addChannel = asyncHandler(async (req, res) => {
   try {
-    const image = req.body.image;
+    const image = req.file;
     const name = req.body.name;
     const userId = req.body.userId;
     const description = req.body.description;
@@ -65,7 +65,10 @@ const addChannel = asyncHandler(async (req, res) => {
       name,
       description,
       userId,
-      imageUrl: image,
+      image: {
+        data: image.buffer.toString("base64"),
+        contentType: image.mimetype,
+      },
     });
 
     const createdChannel = await Channel.create(channel);
@@ -87,11 +90,29 @@ const addChannel = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateChannel = asyncHandler(async (req, res) => {
-  const channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
+  // const channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
+  //   new: true,
+  //   runValidators: true,
+  // });
+  let channel;
+  if (req.file) {
+    // find by id and update with image
+    const image = {
+      data: req.file.buffer.toString("base64"),
+      contentType: req.file.mimetype,
+    };
+    channel = await Channel.findByIdAndUpdate(
+      req.params.id,
+      { image, ...req.body },
+      { new: true, runValidators: true }
+    );
+  } else {
+    // find by id and update without image
+    channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+  }
   if (!channel) {
     return res.status(400).json({
       success: false,
