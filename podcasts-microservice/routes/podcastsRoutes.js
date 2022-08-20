@@ -1,5 +1,8 @@
 const express = require("express");
 const podcastRouter = express.Router();
+
+const { verifyToken, decodeToken } = require("../middleware/auth");
+
 const multer = require("multer");
 const crypto = require("crypto");
 
@@ -14,6 +17,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }).single("file");
 
+
 const {
   getPodcasts,
   getPodcast,
@@ -21,12 +25,16 @@ const {
   addPodcast,
   updatePodcast,
   deletePodcast,
+  getPodcastsByUser,
 } = require("../controllers/podcastsController");
 
+
+podcastRouter.get("/user", [verifyToken, decodeToken], getPodcastsByUser);
 podcastRouter.route("/").get(getPodcasts);
 podcastRouter.post("/", upload, addPodcast);
 podcastRouter.put("/:id", upload, updatePodcast);
 podcastRouter.route("/:id").get(getPodcast).delete(deletePodcast);
 podcastRouter.route("/channel/:id").get(getPodcastsByChannelId);
+
 
 module.exports = podcastRouter;
