@@ -11,6 +11,7 @@ const podcastSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "pending",
+      enum: ["pending", "actif", "refused"]
     },
     explicit: {
       type: Boolean,

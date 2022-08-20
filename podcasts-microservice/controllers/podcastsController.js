@@ -1,18 +1,56 @@
 const asyncHandler = require("express-async-handler");
 
 const Podcast = require("../models/podcastModel");
+const Channel = require("../models/channelModel");
 
 // @desc    Get all podcasts
 // @route   GET /api/v1/podcasts
 // @access  Public
 
 const getPodcasts = asyncHandler(async (req, res) => {
-  const pods = await Podcast.find();
+  let actifs = req.query.actifs? JSON.parse(req.query.actifs): []
+  let expressions = {status: "actif"}
+  if(actifs.length > 0){
+    expressions = {...expressions , tags: { $in: actifs }}
+  }
+  if(req.query.search){
+    expressions = {...expressions , $or : [{title: { $regex: req.query.search, $options: 'i' }}, {description: { $regex: req.query.search, $options: 'i'  } } ] }
+  }
+  const pods = await Podcast.find(expressions).populate('channelId').
+  exec(function (err, podcasts) {
+    if (err) return handleError(err);
+    res.status(200).json({
+      success: true,
+      count: podcasts.length,
+      data: podcasts,
+    });
+  });;
+
+  
+});
+
+// @desc    Get podcasts for specific user
+// @route   GET /api/v1/podcasts
+// @access  Public
+
+const getPodcastsByUser = asyncHandler(async (req, res) => {
+  const channel = await Channel.findOne({userId: req.body.payload.userId})
+  if (channel == null){
+    return res.status(400).json({
+      success: false,
+      error: "user don't own a channel"
+    });
+  }
+
+  const pods = await Podcast.find({channelId: channel._id});
 
   res.status(200).json({
     success: true,
     count: pods.length,
-    data: pods,
+    data: {
+      pods: pods,
+      channel: channel
+    },
   });
 });
 
@@ -159,4 +197,5 @@ module.exports = {
   addPodcast,
   updatePodcast,
   deletePodcast,
+  getPodcastsByUser,
 };
