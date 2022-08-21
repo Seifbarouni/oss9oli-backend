@@ -21,15 +21,8 @@ const getChannels = asyncHandler(async (req, res) => {
 // @access  Public
 
 const getChannelByUserId = asyncHandler(async (req, res) => {
-  if (!req.params.id) {
-    return res.status(500).json({
-      success: false,
-      error: `Invalid ID`,
-    });
-  }
-
   try {
-    const channel = await Channel.findOne({ userId: req.params.id });
+    const channel = await Channel.findOne({ userId: req.body.payload.userId });
 
     if (!channel) {
       return res.status(400).json({
@@ -114,14 +107,14 @@ const updateChannel = asyncHandler(async (req, res) => {
       data: req.file.buffer.toString("base64"),
       contentType: req.file.mimetype,
     };
-    channel = await Channel.findByIdAndUpdate(
-      req.params.id,
+    channel = await Channel.findOneAndUpdate(
+     { userId: req.body.payload.userId},
       { image, ...req.body },
       { new: true, runValidators: true }
     );
   } else {
     // find by id and update without image
-    channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
+    channel = await Channel.findOneAndUpdate({ userId: req.body.payload.userId}, req.body, {
       new: true,
       runValidators: true,
     });

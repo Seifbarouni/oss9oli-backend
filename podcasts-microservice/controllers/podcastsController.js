@@ -143,8 +143,10 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
 
 const addPodcast = asyncHandler(async (req, res) => {
   try {
+    const channel = await Channel.findOne({userId: req.body.payload.userId});
     const podcast = new Podcast({
       ...req.body,
+      channelId: channel._id,
       audio: req.file.path,
     });
     const pod = await Podcast.create(podcast);
