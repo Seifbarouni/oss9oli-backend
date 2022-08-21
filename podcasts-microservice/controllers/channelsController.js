@@ -61,16 +61,28 @@ const addChannel = asyncHandler(async (req, res) => {
     const userId = req.body.userId;
     const description = req.body.description;
 
-    const channel = new Channel({
+    let channel;
+    if (image){
+      channel = new Channel({
       name,
       description,
       userId,
       image: {
-        data: image.buffer.toString("base64"),
-        contentType: image.mimetype,
+        data: image.buffer.toString("base64") ,
+        contentType: image.mimetype, 
       },
     });
-
+    }else{
+      channel = new Channel({
+      name,
+      description,
+      userId,
+      image: {
+        data: "",
+        contentType: "",
+      },
+    });
+    }
     const createdChannel = await Channel.create(channel);
 
     return res.status(201).json({
@@ -78,6 +90,7 @@ const addChannel = asyncHandler(async (req, res) => {
       data: createdChannel,
     });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       success: false,
       error: error.message,
