@@ -31,7 +31,7 @@ const {
 
 podcastRouter.get("/user", [verifyToken, decodeToken], getPodcastsByUser);
 podcastRouter.route("/").get(getPodcasts);
-podcastRouter.post("/", upload, addPodcast);
+podcastRouter.post("/", [upload, verifyToken, decodeToken], addPodcast);
 podcastRouter.put("/:id", upload, updatePodcast);
 podcastRouter.route("/:id").get(getPodcast).delete(deletePodcast);
 podcastRouter.route("/channel/:id").get(getPodcastsByChannelId);
