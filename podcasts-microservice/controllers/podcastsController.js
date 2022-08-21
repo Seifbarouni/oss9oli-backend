@@ -72,11 +72,7 @@ const getPodcast = asyncHandler(async (req, res) => {
   }
 
   try {
-    const pod = await Podcast.findById(req.params.id);
-
-    // get audio file
-    const file = fs.readFileSync(pod.audio,{encoding: 'base64'});
-    
+    const pod = await Podcast.findById(req.params.id);    
 
     if (!pod) {
       return res.status(400).json({
@@ -89,16 +85,11 @@ const getPodcast = asyncHandler(async (req, res) => {
     pod.numberOfListeners++;
     await pod.save();
 
-    return res.status(200).json({
-      success: true,
-      data: {
-        name: pod.audio,
-        audio: file,
-      },
-    });
+    return res.download(pod.audio, pod.title+".mp3")
+    
   } catch (err) {
     return res.status(500).json({
-      success: false,
+      success: falscde,
       error: err.message,
     });
   }
