@@ -75,7 +75,8 @@ const getPodcast = asyncHandler(async (req, res) => {
     const pod = await Podcast.findById(req.params.id);
 
     // get audio file
-    const file = fs.readFileSync(pod.audio);
+    const file = fs.readFileSync(pod.audio,{encoding: 'base64'});
+    
 
     if (!pod) {
       return res.status(400).json({
@@ -91,8 +92,8 @@ const getPodcast = asyncHandler(async (req, res) => {
     return res.status(200).json({
       success: true,
       data: {
-        ...pod,
-        data: file.toString("base64"),
+        name: pod.audio,
+        audio: file,
       },
     });
   } catch (err) {
@@ -102,6 +103,8 @@ const getPodcast = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
 
 // @desc   Get podcasts by channel
 // @route  GET /api/v1/podcasts/channel/:id
