@@ -6,6 +6,7 @@ const Channel = require("../models/channelModel");
 
 const fs = require("fs");
 
+const mm = require('musicmetadata');
 
 // @desc    Get all podcasts
 // @route   GET /api/v1/podcasts
@@ -143,18 +144,23 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
 
 const addPodcast = asyncHandler(async (req, res) => {
   try {
-    const channel = await Channel.findOne({userId: req.body.payload.userId});
+     mm(fs.createReadStream(req.file.path), { duration: true },async function (err, metadata) {
+      if (err) throw err;
+      const channel = await Channel.findOne({userId: req.body.payload.userId});
     const podcast = new Podcast({
       ...req.body,
       channelId: channel._id,
+      length: Math.round(metadata.duration),
       audio: req.file.path,
     });
-    const pod = await Podcast.create(podcast);
+      const pod = await Podcast.create(podcast);
 
-    return res.status(201).json({
-      success: true,
-      data: pod,
-    });
+      return res.status(201).json({
+        success: true,
+        data: pod,
+      });
+      });
+    
   } catch (err) {
     console.log(err);
     return res.status(400).json({
