@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
     pack: {
       type: String,
       enum: ["free", "consumer_pack", "community_pack", "producer_pack"],
+      default: "free",
     },
     role: {
       type: String,

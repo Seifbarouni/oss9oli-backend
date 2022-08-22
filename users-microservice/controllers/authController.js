@@ -50,7 +50,7 @@ const authenticateUserGoogle = asyncHandler(async (req, res) => {
 
         //create Json Web Token
         var JWToken = jwt.sign(
-          { userId: user._id, name: user.name, picture: user.picture },
+          { userId: user._id, name: user.name, picture: user.avatar, pack: user.pack},
           process.env.JWT_SECRET
         );
 
@@ -92,7 +92,7 @@ const authenticateUserFacebook = asyncHandler(async (req, res) => {
 
     //create Json Web Token
     var JWToken = jwt.sign(
-      { userId: user._id, name: user.name, picture: user.picture },
+      { userId: user._id, name: user.name, picture: user.picture  , pack: user.pack},
       process.env.JWT_SECRET
     );
 
