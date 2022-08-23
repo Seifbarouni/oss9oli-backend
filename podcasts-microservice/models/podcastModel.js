@@ -13,6 +13,11 @@ const podcastSchema = new mongoose.Schema(
       default: "pending",
       enum: ["pending", "actif", "refused"]
     },
+    type: {
+      type: String,
+      required: true,
+      enum: ["Monologue","Dialogue"]
+    },
     explicit: {
       type: Boolean,
       required: true,
@@ -22,6 +27,13 @@ const podcastSchema = new mongoose.Schema(
       type: String,
       required: true,
       maxlength: 100,
+    },
+    episodeNumber: {
+      type: Number,
+      required: true
+    },
+    guest: {
+      type: String,
     },
     description: {
       type: String,
