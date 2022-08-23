@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const connectDB = require("./config/db");
-const router = require("./routes/postRoutes");
+const postRouter = require("./routes/postRoutes");
+const commentRouter = require("./routes/commentRoutes");
+const likeRouter = require("./routes/likeRoutes");
 const PORT = process.env.PORT || 5004;
 
 connectDB();
@@ -12,7 +14,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use("/api/v1/posts", router);
+app.use("/api/v1/posts", postRouter);
+app.use("/api/v1/comments", commentRouter);
+app.use("/api/v1/likes", likeRouter);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
