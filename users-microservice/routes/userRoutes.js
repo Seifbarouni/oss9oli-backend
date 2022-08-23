@@ -1,12 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken, verifyProperty } = require("../middlewares/auth");
+const multer = require("multer");
+
+const {
+  verifyToken,
+  verifyProperty,
+  decodeToken,
+} = require("../middlewares/auth");
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).single("file");
 
 const {
   updateUser,
+  getUserUploadedImage,
 } = require("../controllers/userController");
 
-
-router.post("/:id",[verifyToken, verifyProperty],updateUser);
+router.get("/image", [verifyToken, decodeToken], getUserUploadedImage);
+router.post(
+  "/:id",
+  [upload, verifyToken, verifyProperty, decodeToken],
+  updateUser
+);
 
 module.exports = router;
