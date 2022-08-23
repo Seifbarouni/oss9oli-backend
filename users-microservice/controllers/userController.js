@@ -52,10 +52,10 @@ const updateUser = asyncHandler(async (req, res) => {
       message: "User not found",
     });
   }
-  const isImagePresent = false
+  let isImagePresent = false
   if (user.image) isImagePresent = true
   const JWToken = jwt.sign(
-  { userId: user._id, name: user.name, picture: user.avatar, pack: user.pack, isImagePresent},
+  { userId: user._id, name: user.name, picture: user.avatar, pack: user.pack,description: user.description, isImagePresent},
           process.env.JWT_SECRET
   );
 
