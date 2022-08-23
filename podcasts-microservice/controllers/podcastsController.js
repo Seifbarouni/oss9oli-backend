@@ -89,7 +89,7 @@ const getPodcast = asyncHandler(async (req, res) => {
     
   } catch (err) {
     return res.status(500).json({
-      success: falscde,
+      success: false,
       error: err.message,
     });
   }
