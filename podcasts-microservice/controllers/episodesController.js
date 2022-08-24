@@ -1,0 +1,236 @@
+const asyncHandler = require("express-async-handler");
+
+const Episode = require("../models/episodeModel");
+
+const Channel = require("../models/channelModel");
+
+const Podcast = require("../models/podcastModel");
+
+const fs = require("fs");
+
+const mm = require('musicmetadata');
+
+// @desc    Get all episodes
+// @route   GET /api/v1/episodes
+// @access  Public
+
+const getEpisodes = asyncHandler(async (req, res) => {
+    let actifs = req.query.actifs ? JSON.parse(req.query.actifs) : []
+    let expressions = { status: "actif" }
+    if (actifs.length > 0) {
+        expressions = { ...expressions, tags: { $in: actifs } }
+    }
+    if (req.query.search) {
+        expressions = { ...expressions, $or: [{ title: { $regex: req.query.search, $options: 'i' } }, { description: { $regex: req.query.search, $options: 'i' } }] }
+    }
+    const eps = Episode.find(expressions).populate('podcastId').
+        exec(function(err, e) {
+            if (err) return handleError(err);
+            res.status(200).json({
+                success: true,
+                count: e.length,
+                data: e,
+            });
+        });;
+});
+
+// @desc    Get Episodes by user
+// @route   GET /api/v1/episodes/user
+// @access  Public
+
+const getEpisodesByUser = (req, res) => {
+    try {
+        let dt = []
+        Channel.findOne({ userId: req.body.payload.userId }).then(c => {
+            Podcast.find({ channelId: c._id }).then(pod => {
+                pod.forEach(p => {
+                    Episode.find({ podcastId: p._id }).populate("podcastId").then(e => {
+                        dt.push(...e)
+                    })
+                });
+            })
+        })
+
+        const timer = ms => new Promise(res => setTimeout(res, ms));
+        timer(2000).then(_ => {
+            return res.status(200).json({
+                success: true,
+                data: dt
+            })
+        });
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            success: false,
+            error: err
+        })
+    }
+}
+
+
+// @desc    Get single episode
+// @route   GET /api/v1/episodes/:id
+// @access  Public
+
+const getEpisode = asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+        return res.status(500).json({
+            success: false,
+            error: `Invalid ID`,
+        });
+    }
+
+    try {
+        const ep = await Episode.findById(req.params.id);
+
+        if (!ep) {
+            return res.status(400).json({
+                success: false,
+                error: `Episode not found`,
+            });
+        }
+
+        // add 1 to number of listeners
+        ep.numberOfListeners++;
+        await ep.save();
+
+        return res.download(ep.audio, ep.title + ".mp3")
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            error: err.message,
+        });
+    }
+});
+
+
+
+// @desc   Get episodes by podcasts
+// @route  GET /api/v1/episodes/podcast/:id
+// @access Public
+
+const getEpisodesByPodcastId = asyncHandler(async (req, res) => {
+    if (!req.params.id) {
+        return res.status(500).json({
+            success: false,
+            error: `Invalid ID`,
+        });
+    }
+
+    try {
+        const eps = await Episode.find({ podcastId: req.params.id });
+
+        if (!eps) {
+            return res.status(400).json({
+                success: false,
+                error: `Episodes not found`,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            count: eps.length,
+            data: eps,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            error: err.message,
+        });
+    }
+});
+
+// @desc   Add episode
+// @route  POST /api/v1/episodes
+// @access Public
+
+const addEpisode = asyncHandler(async (req, res) => {
+    try {
+        mm(fs.createReadStream(req.file.path), { duration: true }, async function(err, metadata) {
+            if (err) throw err;
+            const episode = new Episode({
+                ...req.body,
+                podcastId: req.body.podcastId,
+                length: Math.round(metadata.duration),
+                audio: req.file.path,
+            });
+            const ep = await Episode.create(episode);
+
+            return res.status(201).json({
+                success: true,
+                data: ep,
+            });
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({
+            success: false,
+            errors: err.errors,
+        });
+    }
+});
+
+// @desc   Update episode
+// @route  PUT /api/v1/episode/:id
+// @access Public
+
+const updateEpisode = asyncHandler(async (req, res) => {
+    let ep;
+
+    if (req.file) {
+        ep = await Episode.findByIdAndUpdate(
+            req.params.id,
+            { ...req.body, audio: req.file.path },
+            { new: true }
+        );
+    } else {
+        ep = await Episode.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+        });
+    }
+
+    if (!ep) {
+        return res.status(400).json({
+            success: false,
+            error: `Episode not found`,
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: ep,
+    });
+});
+
+// @desc   Delete episode
+// @route  DELETE /api/v1/episode/:id
+// @access Public
+
+const deleteEpisode = asyncHandler(async (req, res) => {
+    const ep = await Episode.findByIdAndDelete(req.params.id);
+
+    if (!ep) {
+        return res.status(400).json({
+            success: false,
+            error: `Episode not found`,
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: {},
+    });
+});
+
+module.exports = {
+    getEpisodes,
+    getEpisode,
+    deleteEpisode,
+    updateEpisode,
+    addEpisode,
+    getEpisodesByPodcastId,
+    getEpisodesByUser
+};

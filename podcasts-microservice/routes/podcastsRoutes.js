@@ -8,24 +8,24 @@ const crypto = require("crypto");
 
 //setting options for multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./pods/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, crypto.randomUUID() + file.originalname);
-  },
+    destination: function(req, file, cb) {
+        cb(null, "./pods/");
+    },
+    filename: function(req, file, cb) {
+        cb(null, crypto.randomUUID() + file.originalname);
+    },
 });
 const upload = multer({ storage: storage }).single("file");
 
 
 const {
-  getPodcasts,
-  getPodcast,
-  getPodcastsByChannelId,
-  addPodcast,
-  updatePodcast,
-  deletePodcast,
-  getPodcastsByUser,
+    getPodcasts,
+    getPodcast,
+    getPodcastsByChannelId,
+    addPodcast,
+    updatePodcast,
+    deletePodcast,
+    getPodcastsByUser,
 } = require("../controllers/podcastsController");
 
 
