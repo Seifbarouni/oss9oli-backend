@@ -7,13 +7,13 @@ const Channel = require("../models/channelModel");
 // @access  Public
 
 const getChannels = asyncHandler(async (req, res) => {
-  const channels = await Channel.find();
+    const channels = await Channel.find();
 
-  res.status(200).json({
-    success: true,
-    count: channels.length,
-    data: channels,
-  });
+    res.status(200).json({
+        success: true,
+        count: channels.length,
+        data: channels,
+    });
 });
 
 // @desc    Get single channel by userId
@@ -21,26 +21,26 @@ const getChannels = asyncHandler(async (req, res) => {
 // @access  Public
 
 const getChannelByUserId = asyncHandler(async (req, res) => {
-  try {
-    const channel = await Channel.findOne({ userId: req.body.payload.userId });
+    try {
+        const channel = await Channel.findOne({ userId: req.body.payload.userId });
 
-    if (!channel) {
-      return res.status(400).json({
-        success: false,
-        error: `Channel not found`,
-      });
+        if (!channel) {
+            return res.status(400).json({
+                success: false,
+                error: `Channel not found`,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: channel,
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            error: err.message,
+        });
     }
-
-    return res.status(200).json({
-      success: true,
-      data: channel,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: err.message,
-    });
-  }
 });
 
 // @desc  Add channel
@@ -48,47 +48,47 @@ const getChannelByUserId = asyncHandler(async (req, res) => {
 // @access Private
 
 const addChannel = asyncHandler(async (req, res) => {
-  try {
-    const image = req.file;
-    const name = req.body.name;
-    const userId = req.body.userId;
-    const description = req.body.description;
+    try {
+        const image = req.file;
+        const name = req.body.name;
+        const userId = req.body.userId;
+        const description = req.body.description;
 
-    let channel;
-    if (image){
-      channel = new Channel({
-      name,
-      description,
-      userId,
-      image: {
-        data: image.buffer.toString("base64") ,
-        contentType: image.mimetype, 
-      },
-    });
-    }else{
-      channel = new Channel({
-      name,
-      description,
-      userId,
-      image: {
-        data: "",
-        contentType: "",
-      },
-    });
+        let channel;
+        if (image) {
+            channel = new Channel({
+                name,
+                description,
+                userId,
+                image: {
+                    data: image.buffer.toString("base64"),
+                    contentType: image.mimetype,
+                },
+            });
+        } else {
+            channel = new Channel({
+                name,
+                description,
+                userId,
+                image: {
+                    data: "",
+                    contentType: "",
+                },
+            });
+        }
+        const createdChannel = await Channel.create(channel);
+
+        return res.status(201).json({
+            success: true,
+            data: createdChannel,
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
     }
-    const createdChannel = await Channel.create(channel);
-
-    return res.status(201).json({
-      success: true,
-      data: createdChannel,
-    });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
 });
 
 // @desc  Update channel
@@ -96,40 +96,40 @@ const addChannel = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateChannel = asyncHandler(async (req, res) => {
-  // const channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
-  //   new: true,
-  //   runValidators: true,
-  // });
-  let channel;
-  if (req.file) {
-    // find by id and update with image
-    const image = {
-      data: req.file.buffer.toString("base64"),
-      contentType: req.file.mimetype,
-    };
-    channel = await Channel.findOneAndUpdate(
-     { userId: req.body.payload.userId},
-      { image, ...req.body },
-      { new: true, runValidators: true }
-    );
-  } else {
-    // find by id and update without image
-    channel = await Channel.findOneAndUpdate({ userId: req.body.payload.userId}, req.body, {
-      new: true,
-      runValidators: true,
-    });
-  }
-  if (!channel) {
-    return res.status(400).json({
-      success: false,
-      error: `Channel not found`,
-    });
-  }
+    // const channel = await Channel.findByIdAndUpdate(req.params.id, req.body, {
+    //   new: true,
+    //   runValidators: true,
+    // });
+    let channel;
+    if (req.file) {
+        // find by id and update with image
+        const image = {
+            data: req.file.buffer.toString("base64"),
+            contentType: req.file.mimetype,
+        };
+        channel = await Channel.findOneAndUpdate(
+            { userId: req.body.payload.userId },
+            { image, ...req.body },
+            { new: true, runValidators: true }
+        );
+    } else {
+        // find by id and update without image
+        channel = await Channel.findOneAndUpdate({ userId: req.body.payload.userId }, req.body, {
+            new: true,
+            runValidators: true,
+        });
+    }
+    if (!channel) {
+        return res.status(400).json({
+            success: false,
+            error: `Channel not found`,
+        });
+    }
 
-  return res.status(200).json({
-    success: true,
-    data: channel,
-  });
+    return res.status(200).json({
+        success: true,
+        data: channel,
+    });
 });
 
 // @desc  Delete channel
@@ -137,25 +137,25 @@ const updateChannel = asyncHandler(async (req, res) => {
 // @access Private
 
 const deleteChannel = asyncHandler(async (req, res) => {
-  const channel = await Channel.findByIdAndDelete(req.params.id);
+    const channel = await Channel.findByIdAndDelete(req.params.id);
 
-  if (!channel) {
-    return res.status(400).json({
-      success: false,
-      error: `Channel not found`,
+    if (!channel) {
+        return res.status(400).json({
+            success: false,
+            error: `Channel not found`,
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: {},
     });
-  }
-
-  return res.status(200).json({
-    success: true,
-    data: {},
-  });
 });
 
 module.exports = {
-  getChannels,
-  getChannelByUserId,
-  addChannel,
-  updateChannel,
-  deleteChannel,
+    getChannels,
+    getChannelByUserId,
+    addChannel,
+    updateChannel,
+    deleteChannel,
 };
