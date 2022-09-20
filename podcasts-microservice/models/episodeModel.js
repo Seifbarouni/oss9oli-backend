@@ -11,12 +11,12 @@ const episodeSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "pending",
-      enum: ["pending", "actif", "refused"]
+      enum: ["pending", "actif", "refused"],
     },
     type: {
       type: String,
       required: true,
-      enum: ["Monologue","Dialogue"]
+      enum: ["Monologue", "Dialogue"],
     },
     explicit: {
       type: Boolean,
@@ -30,7 +30,7 @@ const episodeSchema = new mongoose.Schema(
     },
     episodeNumber: {
       type: Number,
-      required: true
+      required: true,
     },
     guest: {
       type: String,
