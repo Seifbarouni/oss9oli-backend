@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const Post = require("../models/postModel");
-const User = require("../models/userModel")
+const User = require("../models/userModel");
 
 // @desc   Add Post
 // @route  POST /api/v1/posts
@@ -20,7 +20,7 @@ const addPost = asyncHandler(async (req, res) => {
   try {
     const newPost = await Post.create({
       userId,
-      content
+      content,
     });
 
     return res.status(201).json({
@@ -40,20 +40,21 @@ const addPost = asyncHandler(async (req, res) => {
 // @access Public
 
 const getPosts = asyncHandler(async (req, res) => {
-
   try {
-    await Post.find().sort("-createdAt").populate("userId", ["avatar", "name"]).exec((err, posts)=>{
-      if(err) 
+    await Post.find()
+      .sort("-createdAt")
+      .populate("userId", ["customSeed", "name"])
+      .exec((err, posts) => {
+        if (err)
           return res.status(500).json({
             success: false,
             error: err,
           });
-       res.status(201).json({
-        success: true,
-        data: posts,
+        res.status(201).json({
+          success: true,
+          data: posts,
+        });
       });
-    });
-
   } catch (err) {
     return res.status(500).json({
       success: false,

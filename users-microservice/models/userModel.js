@@ -12,12 +12,8 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
-    description : {
-      type: String
-    },
-    image:{
-      data: String,
-      contentType: String
+    description: {
+      type: String,
     },
     email: {
       type: String,
@@ -39,6 +35,9 @@ const userSchema = new mongoose.Schema(
     minutesListened: {
       type: Number,
       default: 0,
+    },
+    customSeed: {
+      type: String,
     },
   },
   {

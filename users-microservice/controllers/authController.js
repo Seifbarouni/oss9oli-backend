@@ -48,11 +48,15 @@ const authenticateUserGoogle = asyncHandler(async (req, res) => {
           response.data.email
         );
 
-        let isImagePresent = false
-        if (user.image) isImagePresent = true
         //create Json Web Token
-        var JWToken = jwt.sign(
-          { userId: user._id, name: user.name, picture: user.avatar, pack: user.pack, description: user.description, isImagePresent},
+        const JWToken = jwt.sign(
+          {
+            userId: user._id,
+            name: user.name,
+            pack: user.pack,
+            description: user.description,
+            customSeed: user.customSeed,
+          },
           process.env.JWT_SECRET
         );
 
@@ -92,11 +96,15 @@ const authenticateUserFacebook = asyncHandler(async (req, res) => {
       userInfo.data.email
     );
 
-    let isImagePresent = false
-    if (user.image) isImagePresent = true
-//create Json Web Token
-    var JWToken = jwt.sign(
-      { userId: user._id, name: user.name, picture: user.picture  , pack: user.pack, description: user.description,isImagePresent},
+    //create Json Web Token
+    const JWToken = jwt.sign(
+      {
+        userId: user._id,
+        name: user.name,
+        pack: user.pack,
+        description: user.description,
+        customSeed: user.customSeed,
+      },
       process.env.JWT_SECRET
     );
 
@@ -104,7 +112,6 @@ const authenticateUserFacebook = asyncHandler(async (req, res) => {
       success: true,
       token: JWToken,
     });
-    
   } catch (err) {
     console.error(err);
     return res.status(500).send(err);
