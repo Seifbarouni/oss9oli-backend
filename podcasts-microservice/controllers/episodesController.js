@@ -6,6 +6,8 @@ const Channel = require("../models/channelModel");
 
 const Podcast = require("../models/podcastModel");
 
+const History = require("../models/historyModel");
+
 const fs = require("fs");
 
 const mm = require("musicmetadata");
@@ -95,6 +97,13 @@ const getEpisode = asyncHandler(async (req, res) => {
     });
   }
 
+  if (!req.params.userId) {
+    return res.status(500).json({
+      success: false,
+      error: `Invalid user`,
+    });
+  }
+
   try {
     const ep = await Episode.findById(req.params.id);
 
@@ -109,8 +118,22 @@ const getEpisode = asyncHandler(async (req, res) => {
     ep.numberOfListeners++;
     await ep.save();
 
+    // add to history or update
+    const h = await History.findOne({
+      episodeId: ep._id,
+      userId: req.params.userId,
+    });
+    if (!h) {
+      const history = new History({
+        episodeId: ep._id,
+        userId: req.params.userId,
+      });
+      await history.save();
+    }
+
     return res.download(ep.audio, ep.title + ".mp3");
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       error: err.message,
