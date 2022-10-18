@@ -20,7 +20,7 @@ channelRouter.get("/", getChannels);
 channelRouter.get("/:id", getChannelById);
 channelRouter.post("/", upload, addChannel);
 channelRouter.route("/:id").delete(deleteChannel);
-channelRouter.get("/me", [verifyToken, decodeToken], getChannelByUserId);
+channelRouter.get("/chan/get", [verifyToken, decodeToken], getChannelByUserId);
 channelRouter.put("/me", [upload, verifyToken, decodeToken], updateChannel);
 
 module.exports = channelRouter;

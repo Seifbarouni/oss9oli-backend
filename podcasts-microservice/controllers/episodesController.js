@@ -159,12 +159,11 @@ const getEpisodesByPodcastId = asyncHandler(async (req, res) => {
       error: `Invalid ID`,
     });
   }
-
   try {
-    const eps = await Episode.find({ podcastId: req.params.id })
-      .where("status")
-      .equals("actif")
-      .populate("podcastId");
+    const eps = await Episode.find({
+      podcastId: req.params.id,
+      status: "actif",
+    }).populate("podcastId");
 
     if (!eps) {
       return res.status(400).json({

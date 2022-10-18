@@ -17,13 +17,12 @@ const getChannels = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get single channel by userId
-// @route   GET /api/v1/channels/:id
+// @route   GET /api/v1/channels/chan/get
 // @access  Public
 
 const getChannelByUserId = asyncHandler(async (req, res) => {
   try {
     const channel = await Channel.findOne({ userId: req.body.payload.userId });
-
     if (!channel) {
       return res.status(400).json({
         success: false,
