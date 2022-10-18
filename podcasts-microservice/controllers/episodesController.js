@@ -12,6 +12,8 @@ const fs = require("fs");
 
 const mm = require("musicmetadata");
 
+const mongoose = require("mongoose");
+
 // @desc    Get all episodes
 // @route   GET /api/v1/episodes
 // @access  Public
@@ -34,7 +36,12 @@ const getEpisodes = asyncHandler(async (req, res) => {
   const eps = Episode.find(expressions)
     .populate("podcastId")
     .exec(function (err, e) {
-      if (err) return handleError(err);
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          error: err,
+        });
+      }
       res.status(200).json({
         success: true,
         count: e.length,
@@ -154,7 +161,10 @@ const getEpisodesByPodcastId = asyncHandler(async (req, res) => {
   }
 
   try {
-    const eps = await Episode.find({ podcastId: req.params.id });
+    const eps = await Episode.find({ podcastId: req.params.id })
+      .where("status")
+      .equals("actif")
+      .populate("podcastId");
 
     if (!eps) {
       return res.status(400).json({
@@ -169,6 +179,7 @@ const getEpisodesByPodcastId = asyncHandler(async (req, res) => {
       data: eps,
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       success: false,
       error: err.message,

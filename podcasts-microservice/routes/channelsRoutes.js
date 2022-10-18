@@ -8,14 +8,16 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).single("file");
 
 const {
-    getChannels,
-    getChannelByUserId,
-    addChannel,
-    updateChannel,
-    deleteChannel,
+  getChannels,
+  getChannelByUserId,
+  getChannelById,
+  addChannel,
+  updateChannel,
+  deleteChannel,
 } = require("../controllers/channelsController");
 
 channelRouter.get("/", getChannels);
+channelRouter.get("/:id", getChannelById);
 channelRouter.post("/", upload, addChannel);
 channelRouter.route("/:id").delete(deleteChannel);
 channelRouter.get("/me", [verifyToken, decodeToken], getChannelByUserId);

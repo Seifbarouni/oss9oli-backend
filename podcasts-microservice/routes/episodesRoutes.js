@@ -33,6 +33,6 @@ episodesRouter.post("/", [upload, verifyToken, decodeToken], addEpisode);
 episodesRouter.put("/:id", upload, updateEpisode);
 episodesRouter.route("/:id/:userId").get(getEpisode);
 episodesRouter.route("/:id").delete(deleteEpisode);
-episodesRouter.route("/podcast/:id").get(getEpisodesByPodcastId);
+episodesRouter.get("/podcast/find/:id", getEpisodesByPodcastId);
 
 module.exports = episodesRouter;
