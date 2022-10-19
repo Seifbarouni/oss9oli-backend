@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const Post = require("../models/postModel");
+const {Pensee} = require("../models/postModel");
 const User = require("../models/userModel");
 
 // @desc   Add Post
@@ -18,13 +18,14 @@ const addComment = asyncHandler(async (req, res) => {
   }
 
   try {
-    let post = await Post.findById(postId);
+    let post = await Pensee.findById(postId);
+    console.log(post)
     post.comments = [
       ...post.comments,
       { comment: comment, userId: req.body.payload.userId },
     ];
     await post.save();
-    Post.populate(
+    Pensee.populate(
       post,
       { path: "comments." + (post.comments.length - 1) + ".userId" },
       (err, post) => {
@@ -42,6 +43,7 @@ const addComment = asyncHandler(async (req, res) => {
       }
     );
   } catch (err) {
+    console.log(err)
     return res.status(500).json({
       success: false,
       error: err,
@@ -51,7 +53,7 @@ const addComment = asyncHandler(async (req, res) => {
 
 const getComments = asyncHandler(async (req, res) => {
   try {
-    await Post.findById(req.params.postId)
+    await Pensee.findById(req.params.postId)
       .populate("comments.userId", ["customSeed", "name"])
       .exec((err, post) => {
         if (err) {

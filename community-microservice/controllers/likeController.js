@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const Post = require("../models/postModel");
+const {Pensee} = require("../models/postModel");
 const User = require("../models/userModel")
 
 // @desc   Add Post
@@ -9,7 +9,7 @@ const User = require("../models/userModel")
 
 const likePost = asyncHandler(async (req, res) => {
   try {
-    let post = await Post.findById(req.params.postId)
+    let post = await Pensee.findById(req.params.postId)
     if(post.likes.includes(req.body.payload.userId)){
       post.likes = post.likes.filter((id)=>{
         return id == req.params.postId
