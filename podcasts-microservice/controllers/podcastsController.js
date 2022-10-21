@@ -4,6 +4,14 @@ const Podcast = require("../models/podcastModel");
 
 const Channel = require("../models/channelModel");
 
+const Episode = require("../models/episodeModel");
+
+const fs = require("fs");
+
+const path = require("path");
+
+const mm = require("musicmetadata");
+
 // @desc    Get all podcasts
 // @route   GET /api/v1/podcasts
 // @access  Public
@@ -116,15 +124,51 @@ const getPodcastsByChannelId = asyncHandler(async (req, res) => {
 
 const addPodcast = asyncHandler(async (req, res) => {
   try {
+    const image = req.files[0];
+    const channel = await Channel.findOne({ userId: req.body.payload.userId });
+    if (channel == null) {
+      return res.status(400).json({
+        success: false,
+        error: "user doesn't own a channel",
+      });
+    }
     const podcast = new Podcast({
-      ...req.body,
+      name: req.body.title,
+      description: req.body.description,
+      channelId: channel._id,
+      image: {
+        data: fs
+          .readFileSync(path.join(__dirname + "/../" + image.path))
+          .toString("base64"),
+        contentType: image.mimetype,
+      },
     });
     const pod = await Podcast.create(podcast);
 
-    return res.status(201).json({
-      success: true,
-      data: pod,
-    });
+    mm(
+      fs.createReadStream(req.files[1].path),
+      { duration: true },
+      async function (err, metadata) {
+        if (err) throw err;
+        const episode = new Episode({
+          title: req.body.episodeName,
+          description: req.body.episodeDescription,
+          type: req.body.type,
+          episodeNumber: req.body.episodeNumber,
+          guest: req.body.guest,
+          tags: req.body.tags,
+          podcastId: pod._id,
+          length: Math.round(metadata.duration),
+          audio: req.files[1].path,
+        });
+        const ep = await Episode.create(episode);
+
+        return res.status(201).json({
+          success: true,
+          data: ep,
+        });
+      }
+    );
   } catch (err) {
     console.log(err);
     return res.status(400).json({

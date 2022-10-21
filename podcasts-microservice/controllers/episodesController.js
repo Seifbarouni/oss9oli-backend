@@ -12,8 +12,6 @@ const fs = require("fs");
 
 const mm = require("musicmetadata");
 
-const mongoose = require("mongoose");
-
 // @desc    Get all episodes
 // @route   GET /api/v1/episodes
 // @access  Public

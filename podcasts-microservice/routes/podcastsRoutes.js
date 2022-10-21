@@ -8,33 +8,31 @@ const crypto = require("crypto");
 
 //setting options for multer
 const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, "./pods/");
-    },
-    filename: function(req, file, cb) {
-        cb(null, crypto.randomUUID() + file.originalname);
-    },
+  destination: function (req, file, cb) {
+    cb(null, "./pods/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, crypto.randomUUID() + file.originalname);
+  },
 });
-const upload = multer({ storage: storage }).single("file");
 
+const upload = multer({ storage: storage }).array("file");
 
 const {
-    getPodcasts,
-    getPodcast,
-    getPodcastsByChannelId,
-    addPodcast,
-    updatePodcast,
-    deletePodcast,
-    getPodcastsByUser,
+  getPodcasts,
+  getPodcast,
+  getPodcastsByChannelId,
+  addPodcast,
+  updatePodcast,
+  deletePodcast,
+  getPodcastsByUser,
 } = require("../controllers/podcastsController");
-
 
 podcastRouter.get("/user", [verifyToken, decodeToken], getPodcastsByUser);
 podcastRouter.route("/").get(getPodcasts);
-podcastRouter.post("/", [upload, verifyToken, decodeToken], addPodcast);
+podcastRouter.post("/", [verifyToken, upload, decodeToken], addPodcast);
 podcastRouter.put("/:id", upload, updatePodcast);
 podcastRouter.route("/:id").get(getPodcast).delete(deletePodcast);
 podcastRouter.route("/channel/:id").get(getPodcastsByChannelId);
-
 
 module.exports = podcastRouter;
