@@ -73,7 +73,7 @@ const getEpisodesByUser = (req, res) => {
         })
         .then(() => {
           const timer = (ms) => new Promise((res) => setTimeout(res, ms));
-          timer(1340).then((_) => {
+          timer(1500).then((_) => {
             res.status(200).json({
               success: true,
               data: dt,
