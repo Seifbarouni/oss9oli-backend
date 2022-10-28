@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/api/v1/posts", postRouter);
 app.use("/api/v1/comments", commentRouter);
-app.use("/api/v1/likes", likeRouter);
+app.use("/api/v1/react", likeRouter);
 app.use("/api/v1/votes", voteRouter);
 
 app.listen(PORT, () => {

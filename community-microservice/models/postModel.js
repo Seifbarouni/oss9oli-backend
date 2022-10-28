@@ -75,6 +75,11 @@ const Pensee = Post.discriminator('Pensee',
       type: [{ type : mongoose.Schema.Types.ObjectId, ref: 'User' }],
       default: [],
       required: true
+    },
+    dislikes: {
+      type: [{ type : mongoose.Schema.Types.ObjectId, ref: 'User' }],
+      default: [],
+      required: true
     }
   },
   {
