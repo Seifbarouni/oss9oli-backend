@@ -12,13 +12,13 @@ const likePost = asyncHandler(async (req, res) => {
     let post = await Pensee.findById(req.params.postId)
     if(post.dislikes.includes(req.body.payload.userId)){
       post.dislikes = post.dislikes.filter((id)=>{
-        return id == req.params.postId
+        return id+"" != req.body.payload.userId
       })
       post.likes.push(req.body.payload.userId)
     }
     else if(post.likes.includes(req.body.payload.userId)){
       post.likes = post.likes.filter((id)=>{
-        return id == req.params.postId
+        return id+"" != req.body.payload.userId
       })
     }else{
       post.likes.push(req.body.payload.userId)
@@ -44,13 +44,13 @@ const dislikePost = asyncHandler(async (req, res) => {
     let post = await Pensee.findById(req.params.postId)
     if(post.likes.includes(req.body.payload.userId)){
       post.likes = post.likes.filter((id)=>{
-        return id == req.params.postId
+        return id+"" != req.body.payload.userId
       })
       post.dislikes.push(req.body.payload.userId)
     }
     else if(post.dislikes.includes(req.body.payload.userId)){
       post.dislikes = post.dislikes.filter((id)=>{
-        return id == req.params.postId
+        return id+"" != req.body.payload.userId
       })
     }else{
       post.dislikes.push(req.body.payload.userId)
