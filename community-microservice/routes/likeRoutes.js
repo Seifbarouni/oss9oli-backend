@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   likePost,
+  dislikePost
 } = require("../controllers/likeController");
 
 const {
@@ -11,6 +12,7 @@ const {
 } = require("../middleware/auth");
 
 
-router.put("/:postId", [verifyToken, decodeToken],likePost)
+router.put("/like/:postId", [verifyToken, decodeToken],likePost)
+router.put("/dislike/:postId", [verifyToken, decodeToken],dislikePost)
 
 module.exports = router;
