@@ -90,6 +90,29 @@ const getEpisodesByUser = (req, res) => {
   }
 };
 
+const getEpisodesByUser2 = asyncHandler(async (req, res) => {
+  try {
+    const c = await Channel.findOne({ userId: req.body.payload.userId });
+    const channel_id = c._id;
+
+    const eps = await Episode.find({ channelId: channel_id }).populate(
+      "podcastId"
+    );
+
+    res.status(200).json({
+      success: true,
+      count: eps.length,
+      data: eps,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      error: err,
+    });
+  }
+});
+
 // @desc    Get single episode
 // @route   GET /api/v1/episodes/:id
 // @access  Public
@@ -278,4 +301,5 @@ module.exports = {
   addEpisode,
   getEpisodesByPodcastId,
   getEpisodesByUser,
+  getEpisodesByUser2,
 };

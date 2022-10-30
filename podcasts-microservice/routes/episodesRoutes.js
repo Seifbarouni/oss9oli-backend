@@ -25,9 +25,15 @@ const {
   getEpisode,
   getEpisodesByPodcastId,
   getEpisodesByUser,
+  getEpisodesByUser2,
 } = require("../controllers/episodesController");
 
 episodesRouter.get("/user", [verifyToken, decodeToken], getEpisodesByUser);
+episodesRouter.get(
+  "/eps_user/get",
+  [verifyToken, decodeToken],
+  getEpisodesByUser2
+);
 episodesRouter.route("/").get(getEpisodes);
 episodesRouter.post("/", [upload, verifyToken, decodeToken], addEpisode);
 episodesRouter.put("/:id", upload, updateEpisode);

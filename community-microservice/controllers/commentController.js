@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 
-const {Pensee} = require("../models/postModel");
+const { Pensee } = require("../models/postModel");
 const User = require("../models/userModel");
 
 // @desc   Add Post
@@ -19,7 +19,6 @@ const addComment = asyncHandler(async (req, res) => {
 
   try {
     let post = await Pensee.findById(postId);
-    console.log(post)
     post.comments = [
       ...post.comments,
       { comment: comment, userId: req.body.payload.userId },
@@ -43,7 +42,7 @@ const addComment = asyncHandler(async (req, res) => {
       }
     );
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(500).json({
       success: false,
       error: err,
@@ -53,21 +52,29 @@ const addComment = asyncHandler(async (req, res) => {
 
 const getComments = asyncHandler(async (req, res) => {
   try {
-    await Pensee.findById(req.params.postId)
-      .populate("comments.userId", ["customSeed", "name"])
-      .exec((err, post) => {
-        if (err) {
-          res.status(500).json({
-            success: false,
-            error: err,
-          });
-        } else {
-          return res.status(201).json({
-            success: true,
-            data: post.comments,
-          });
-        }
+    const post = await Pensee.findById(req.params.postId).populate(
+      "comments.userId",
+      ["customSeed", "name"]
+    );
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
       });
+    }
+
+    if (post.comments.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: post.comments,
+    });
   } catch (err) {
     return res.status(500).json({
       success: false,
