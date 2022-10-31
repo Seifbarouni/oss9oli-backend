@@ -278,7 +278,12 @@ const updateEpisode = asyncHandler(async (req, res) => {
 // @access Public
 
 const deleteEpisode = asyncHandler(async (req, res) => {
-  const ep = await Episode.findByIdAndDelete(req.params.id);
+  // make episode status "deleted"
+  const ep = await Episode.findByIdAndUpdate(
+    req.params.id,
+    { status: "deleted" },
+    { new: true }
+  );
 
   if (!ep) {
     return res.status(400).json({

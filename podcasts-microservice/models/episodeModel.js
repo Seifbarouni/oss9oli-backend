@@ -11,7 +11,7 @@ const episodeSchema = new mongoose.Schema(
       type: String,
       required: true,
       default: "pending",
-      enum: ["pending", "actif", "refused"],
+      enum: ["pending", "actif", "refused", "deleted"],
     },
     type: {
       type: String,
