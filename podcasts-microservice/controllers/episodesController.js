@@ -207,6 +207,44 @@ const getEpisodesByPodcastId = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc   Get episodes by podcast id and show the pending ones
+// @route  GET /api/v1/episodes/podcast/:id
+// @access Public
+
+const chan_getEpisodesByPodcastId = asyncHandler(async (req, res) => {
+  if (!req.params.id) {
+    return res.status(500).json({
+      success: false,
+      error: `Invalid ID`,
+    });
+  }
+  try {
+    const eps = await Episode.find({
+      podcastId: req.params.id,
+      status: { $in: ["actif", "pending"] },
+    }).populate("podcastId");
+
+    if (!eps) {
+      return res.status(400).json({
+        success: false,
+        error: `Episodes not found`,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: eps.length,
+      data: eps,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 // @desc   Add episode
 // @route  POST /api/v1/episodes
 // @access Public
@@ -307,4 +345,5 @@ module.exports = {
   getEpisodesByPodcastId,
   getEpisodesByUser,
   getEpisodesByUser2,
+  chan_getEpisodesByPodcastId,
 };
