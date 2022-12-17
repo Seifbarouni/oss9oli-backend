@@ -92,11 +92,15 @@ const getEpisodesByUser = (req, res) => {
 
 const getEpisodesByUser2 = asyncHandler(async (req, res) => {
   try {
+    //get user's channel
     const c = await Channel.findOne({ userId: req.body.payload.userId });
-    const channel_id = c._id;
-
+    //get user's podcasts
+    const podcasts = await Podcast.find({channelId: c._id});
+    //extract podcast ids
+    let podcastId = podcasts.map(pod=> pod._id)
+    //get episodes
     const eps = await Episode.find({
-      channelId: channel_id,
+      podcastId: {$in: podcastId},
       status: { $in: ["actif", "pending"] },
     }).populate("podcastId");
 
