@@ -84,7 +84,12 @@ const createUser = async (providerId, name, avatar, email) => {
           description: "change me",
         }
       );
-      console.log(res.data);
+      await axios.post(
+        `${process.env.PODCAST_SERVICE_URL}/api/v1/playlist`,
+        {
+          userId: user._id,
+        }
+      );
     }
     return user;
   } catch (err) {
