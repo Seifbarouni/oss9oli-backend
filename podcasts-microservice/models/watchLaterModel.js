@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const likedEpsSchema = new mongoose.Schema(
+const watchLaterSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -17,4 +17,5 @@ const likedEpsSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("likedEps", likedEpsSchema);
+module.exports = mongoose.model("watchLater", watchLaterSchema);
+
