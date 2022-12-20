@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const WatchLater = require("../models/watchLaterModel");
 const LikedEps = require("../models/likedPlaylistModel");
 const Unfinished = require("../models/unfinishedPlaylistModel");
+const PodcastPlaylist = require("../models/PodcastPlaylistModel");
 
 const getPlaylistLiked = asyncHandler(async (req, res) => {
     try{
@@ -51,6 +52,27 @@ const getPlaylistLater = asyncHandler(async (req, res) => {
 
 })
 
+const getPlaylisPodcasts = asyncHandler(async (req, res) => {
+    try{
+        let podcasts = await PodcastPlaylist.findOne({userId: req.body.payload.userId}).populate({
+            path: 'podcasts',
+            model: 'Podcast',
+        })
+        return res.status(200).json({
+            success: true,
+            data: podcasts.podcasts
+        })
+    }
+    catch(e){
+        console.log(e)
+        return res.status(500).json({
+            success: false,
+            error: e,
+        });
+    }
+
+})
+
 const getPlaylistUnfinished = asyncHandler(async (req, res) => {
     try{
         let unfinished = await Unfinished.findOne({userId: req.body.payload.userId}).populate({
@@ -86,6 +108,7 @@ const createPlaylists = asyncHandler(async (req, res) => {
         await WatchLater.create({userId: req.body.userId})
         await LikedEps.create({userId: req.body.userId})
         await Unfinished.create({userId: req.body.userId})
+        await PodcastPlaylist.create({userId: req.body.userId})
         return res.status(200).json({
             success: true,
         });
@@ -215,6 +238,36 @@ const unfinishedEpisode = asyncHandler(async (req, res) => {
     }
 
 })
+
+const managePodcasts = asyncHandler(async (req, res) => {
+    try{
+        let podcastPlaylist = await PodcastPlaylist.findOne({userId: req.body.payload.userId})
+        for(let podcast of podcastPlaylist.podcasts){
+            if(podcast._id+"" == req.body.podcastId){
+                podcastPlaylist.podcasts.splice(podcastPlaylist.podcasts.indexOf(podcast), 1)
+                await podcastPlaylist.save()
+                return res.status(200).json({
+                    success: true,
+                    message: "saved",
+                });
+            }
+        }
+        podcastPlaylist.podcasts.push(req.body.podcastId);
+        await podcastPlaylist.save()
+        return res.status(200).json({
+            success: true,
+            message: "saved",
+        });
+    }
+    catch(e){
+        console.log(e)
+        return res.status(500).json({
+            success: false,
+            error: e,
+        });
+    }
+
+})
 module.exports = {
     checkEpisode,
     createPlaylists,
@@ -223,5 +276,7 @@ module.exports = {
     likeEpisode,
     laterEpisode,
     unfinishedEpisode,
-    getPlaylistUnfinished
+    getPlaylistUnfinished,
+    getPlaylisPodcasts,
+    managePodcasts
   };
