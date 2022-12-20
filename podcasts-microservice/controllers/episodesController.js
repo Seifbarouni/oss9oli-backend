@@ -18,7 +18,7 @@ const mm = require("musicmetadata");
 
 const getEpisodes = asyncHandler(async (req, res) => {
   let actifs = req.query.actifs ? JSON.parse(req.query.actifs) : [];
-  let expressions = { status: "actif" };
+  let expressions = { status: "pending" };
   if (actifs.length > 0) {
     expressions = { ...expressions, tags: { $in: actifs } };
   }
