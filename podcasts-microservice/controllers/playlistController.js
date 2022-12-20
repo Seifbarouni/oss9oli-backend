@@ -150,7 +150,22 @@ const checkEpisode = asyncHandler(async (req, res) => {
     }
 
 })
+const checkPodcast = asyncHandler(async (req, res) => {
+    try{
+        let podcastPlaylist = await PodcastPlaylist.findOne({userId: req.body.payload.userId, podcasts: req.query.podcastId})
+        return res.status(200).json({
+            success: true,
+            liked: podcastPlaylist != null,
+        });
+    }
+    catch(e){
+        return res.status(500).json({
+            success: false,
+            error: e,
+        });
+    }
 
+})
 const likeEpisode = asyncHandler(async (req, res) => {
     try{
         let liked = await LikedEps.findOne({userId: req.body.payload.userId});
@@ -248,7 +263,7 @@ const managePodcasts = asyncHandler(async (req, res) => {
                 await podcastPlaylist.save()
                 return res.status(200).json({
                     success: true,
-                    message: "saved",
+                    exist: false,
                 });
             }
         }
@@ -256,7 +271,7 @@ const managePodcasts = asyncHandler(async (req, res) => {
         await podcastPlaylist.save()
         return res.status(200).json({
             success: true,
-            message: "saved",
+            exist: true,
         });
     }
     catch(e){
@@ -278,5 +293,6 @@ module.exports = {
     unfinishedEpisode,
     getPlaylistUnfinished,
     getPlaylisPodcasts,
-    managePodcasts
+    managePodcasts,
+    checkPodcast
   };
