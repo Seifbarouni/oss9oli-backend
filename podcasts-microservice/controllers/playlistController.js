@@ -3,7 +3,7 @@ const WatchLater = require("../models/watchLaterModel");
 const LikedEps = require("../models/likedPlaylistModel");
 const Unfinished = require("../models/unfinishedPlaylistModel");
 const PodcastPlaylist = require("../models/PodcastPlaylistModel");
-
+const Episode = require("../models/episodeModel")
 const getPlaylistLiked = asyncHandler(async (req, res) => {
     try{
         let liked = await LikedEps.findOne({userId: req.body.payload.userId}).populate({
@@ -198,6 +198,20 @@ const likeEpisode = asyncHandler(async (req, res) => {
 const laterEpisode = asyncHandler(async (req, res) => {
     try{
         let later = await WatchLater.findOne({userId: req.body.payload.userId});
+        if(req.body.podcastId){
+            //should add "actif" as filter
+            let episodes = await Episode.find({podcastId: req.body.podcastId})
+            let episodesId = [...episodes.map(eps=>eps._id), ...later.episodes];
+            //remove duplicates
+            const ids = {}
+            episodesId.forEach(_id => (ids[_id.toString()] = _id))
+            later.episodes = Object.values(ids)
+            await later.save();
+            return res.status(200).json({
+                success: true,
+                exist: false,
+            });
+        }
         for(let eps of later.episodes){
             if(eps+"" == req.body.episodeId){
                 later.episodes.splice(later.episodes.indexOf(eps), 1)
@@ -216,6 +230,7 @@ const laterEpisode = asyncHandler(async (req, res) => {
         });
     }
     catch(e){
+        console.log(e)
         return res.status(500).json({
             success: false,
             error: e,
@@ -283,6 +298,54 @@ const managePodcasts = asyncHandler(async (req, res) => {
     }
 
 })
+
+const getEpisode = asyncHandler(async (req, res) => {
+    try{
+        let watchLater = await WatchLater.findOne({userId: req.body.payload.userId}).populate({
+            path: 'episodes',
+            model: 'Episode',
+            populate: [{
+                path: 'podcastId',
+                model: 'Podcast'
+            }]
+        })
+        let index = null;
+        for(let i = 0; i<watchLater.episodes.length; i++){
+            if(watchLater.episodes[i]._id+"" == req.query.episodeId){
+                index = i;
+                break;
+            }
+        }
+        if(index == null || (index == 0 && req.query.action == "previous") || (index == (watchLater.episodes.length-1) && req.query.action == "next") ){
+            return res.status(200).json({
+                success: true,
+                data: {
+                    message: "this action can't be done"
+                },
+            });
+        }
+        let episodeId = null;
+        if(req.query.action == "previous"){
+            episodeId = watchLater.episodes[index-1]
+        }else if(req.query.action == "next"){
+            episodeId = watchLater.episodes[index+1]
+        }
+        return res.status(200).json({
+            success: true,
+            data: {
+                episode: episodeId
+            },
+        });
+    }
+    catch(e){
+        console.log(e)
+        return res.status(500).json({
+            success: false,
+            error: e,
+        });
+    }
+
+})
 module.exports = {
     checkEpisode,
     createPlaylists,
@@ -294,5 +357,6 @@ module.exports = {
     getPlaylistUnfinished,
     getPlaylisPodcasts,
     managePodcasts,
-    checkPodcast
+    checkPodcast,
+    getEpisode
   };

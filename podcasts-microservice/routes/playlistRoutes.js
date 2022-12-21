@@ -14,11 +14,13 @@ const {
     unfinishedEpisode,
     getPlaylisPodcasts,    
     managePodcasts,
-    checkPodcast
+    checkPodcast,
+    getEpisode
 } = require("../controllers/playlistController");
 
 playlistRouter.get("/checkEpisode", [verifyToken, decodeToken], checkEpisode);
 playlistRouter.get("/checkPodcast", [verifyToken, decodeToken], checkPodcast);
+playlistRouter.get("/episode", [verifyToken, decodeToken], getEpisode);
 playlistRouter.post("/", createPlaylists);
  playlistRouter.get("/later", [verifyToken, decodeToken], getPlaylistLater);
  playlistRouter.get("/unfinished", [verifyToken, decodeToken], getPlaylistUnfinished);
