@@ -340,7 +340,22 @@ const deleteEpisode = asyncHandler(async (req, res) => {
     data: {},
   });
 });
-
+let tags = null;
+const getTags = asyncHandler(async (req, res) => {
+  if(tags == null || tags.iat + (1000*60*60) < Date.now()){
+    const eps = await Episode.find({status: "pending"});
+    let tagArrays = eps.map(ep=>[...ep.tags])
+    let tempTags = [];
+    for(let arr of tagArrays){
+      tempTags = tempTags.concat(arr)
+    }
+    tags = {tags: [...new Set(tempTags)], iat: Date.now()};
+  }
+  return res.status(200).json({
+    success: true,
+    data: tags.tags,
+  });
+});
 module.exports = {
   getEpisodes,
   getEpisode,
@@ -351,4 +366,5 @@ module.exports = {
   getEpisodesByUser,
   getEpisodesByUser2,
   chan_getEpisodesByPodcastId,
+  getTags
 };

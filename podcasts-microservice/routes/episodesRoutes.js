@@ -27,6 +27,7 @@ const {
   getEpisodesByUser,
   getEpisodesByUser2,
   chan_getEpisodesByPodcastId,
+  getTags
 } = require("../controllers/episodesController");
 
 episodesRouter.get("/user", [verifyToken, decodeToken], getEpisodesByUser);
@@ -42,5 +43,6 @@ episodesRouter.route("/:id/:userId").get(getEpisode);
 episodesRouter.route("/:id").delete(deleteEpisode);
 episodesRouter.get("/podcast/find/:id", getEpisodesByPodcastId);
 episodesRouter.get("/podcast/find/chan/:id", chan_getEpisodesByPodcastId);
+episodesRouter.get("/tags", getTags);
 
 module.exports = episodesRouter;
