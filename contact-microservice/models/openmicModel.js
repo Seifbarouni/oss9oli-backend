@@ -9,6 +9,7 @@ const openmicSchema = new mongoose.Schema(
     },
     file: {
       type: String,
+      required: true
     },
     age: {
       type: Number,
@@ -16,9 +17,11 @@ const openmicSchema = new mongoose.Schema(
     },
     message: {
       type: String,
+      required: true
     },
     motivation: {
       type: String,
+      required: true
     },
     nomApp: {
       type: Boolean,
